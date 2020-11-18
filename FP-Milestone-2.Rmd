@@ -1,0 +1,84 @@
+---
+title: "milestone 2"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(dplyr)
+library(skimr)
+library(ggplot2)
+library(tidyverse)
+```
+
+```{r}
+survey <- read.csv("https://raw.githubusercontent.com/themarshallproject/incarcerated_survey/master/data/incarcerated_survey_responses-marshallproject_slate-march_2019.csv")
+```
+
+```{r Clean Data}
+# Cleaning the data
+
+# Renaming political party variables.
+survey$party <- gsub("The Republican party", "Conservative", survey$party)
+survey$party <- gsub("The Democratic party", "Liberal", survey$party)
+
+# Turning the responses of the "stance on" questions into factor variables
+stance_cols <- c("stance_on_assault_weapons_ban", "stance_on_marijuana_legalization", "stance_on_raise_min_wage", "stance_on_tightening_border_security")
+survey[stance_cols] <- lapply(survey[stance_cols], factor)
+
+levels(survey[stance_cols]) <- c("Undecided", "Strongly Oppose", "Oppose", "Support", "Strongly Support")
+```
+
+```{r Summarize Stance}
+#Summarizing the explanatory and response variables using tidyverse.
+survey_subset <- survey %>%
+  select(party, 
+         length_in_this_facility,
+         stance_on_assault_weapons_ban, 
+         stance_on_marijuana_legalization, 
+         stance_on_tightening_border_security, 
+         stance_on_raise_min_wage) %>%
+  drop_na()
+
+survey_subset %>%
+  summary()
+```
+
+```{r party-length tables}
+# Creating summary tables of party and survey length.
+table(survey$party, survey$length_in_this_facility)
+prop.table(table(survey$party, survey$length_in_this_facility))
+```
+
+```{r Weapons-Length Table, warning = FALSE}
+# Table with weapons stance and length in facility
+weptab <- table(survey_subset$stance_on_assault_weapons_ban, survey_subset$length_in_this_facility)
+weptab
+
+prop.table(table(survey_subset$stance_on_assault_weapons_ban, survey_subset$length_in_this_facility))
+
+# Plot of weapons stance and length
+# barplot(weptab, col=c("lightblue1","steelblue2", "steelblue3", "steelblue4", "navy"), legend = rownames(weptab), beside=TRUE)
+```
+
+```{r}
+survey$weapon_stance[survey$stance_on_assault_weapons_ban == "Strongly Oppose"] <- 0.25
+survey$weapon_stance[survey$stance_on_assault_weapons_ban == "Oppose"] <- 0.25
+survey$weapon_stance[survey$stance_on_assault_weapons_ban == "Undecided"] <- 0.5
+survey$weapon_stance[survey$stance_on_assault_weapons_ban == "Support"] <- 0.75
+survey$weapon_stance[survey$stance_on_assault_weapons_ban == "Strongly support"] <- 1
+```
+
+```{r}
+boxplot(x = survey$weapon_stance)
+```
+
+
+
+
+
+
+
+
+
