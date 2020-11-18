@@ -200,9 +200,22 @@ boxplot(survey$mw_stance ~ survey$length_in_this_facility,
 
 # Mean of Four Political Views (Arms Stance, Marijuana Legalization, Border Security, and Minimum Wage)
 
------
+```{r}
 ## creating variable in the data frame with NA on mean of political attitudes
 ## the higher the mean, the more liberal the prisoner
+survey <- survey %>%
+  select(party, 
+         length_in_this_facility,
+         stance_on_assault_weapons_ban, 
+         stance_on_marijuana_legalization, 
+         stance_on_tightening_border_security, 
+         stance_on_raise_min_wage,
+         weapon_stance,
+         marijuana_stance,
+         border_stance,
+         mw_stance) %>%
+  drop_na()
+
 survey$mean_four_political_views <- (survey$weapon_stance + survey$marijuana_stance + survey$border_stance + survey$mw_stance) / 4
 
 meanpolview_length_table <- table(survey$mean_four_political_views, survey$length_in_this_facility)
@@ -213,8 +226,8 @@ meanpolview_length_prop_table <- prop.table(table(survey$mean_four_political_vie
 plot(meanpolview_length_table)
 
 ## creating variable in the data frame with no NA on mean of political attitudes
-survey_subset$mean_four_political_views <- (survey_subset$weapon_stance + survey_subset$marijuana_stance + survey_subset$border_stance + survey_subset$mw_stance) / 4
-meanpolview_length_table_no_NA <- table(survey_subset$mean_four_political_views, survey_subset$length_in_this_facility)
+survey$mean_four_political_views <- (survey$weapon_stance + survey$marijuana_stance + survey$border_stance + survey$mw_stance) / 4
+meanpolview_length_table_no_NA <- table(survey$mean_four_political_views, survey$length_in_this_facility)
 knitr::kable(meanpolview_length_table_no_NA, digits = 4, caption = "Average Political Stance Based on Jail Time (no NA)")
 meanpolview_length_prop_table_no_NA <- prop.table(table(survey_subset$mean_four_political_views, survey_subset$length_in_this_facility))
 plot(meanpolview_length_prop_table_no_NA)
@@ -243,11 +256,11 @@ knitr::kable(ideology_and_facility_length_table_no_NA, digits = 4, caption = "Av
 ideology_and_facility_length_prop_table_no_NA <- prop.table(table(survey_no_NA$ideology, survey_no_NA$length_in_this_facility))
  
 plot(ideology_and_facility_length_table_no_NA)
-----
+```
 
 ## Regression
 
-----
+```{r}
 ## linear regression model comparing the mean of four political views and the length of time spent in prison with NA
 mean_four_political_views_and_facility_length_fit <- lm(survey$mean_four_political_views ~ survey$length_in_this_facility)
 mean_four_political_views_and_facility_length_fit
@@ -260,7 +273,7 @@ mean_four_political_views_and_facility_length_fit_no_NA
 mean_four_political_views_and_facility_length_fit_no_NA_plot <- plot(mean_four_political_views_and_facility_length_fit_no_NA) 
 mean_four_political_views_and_facility_length_fit__no_NA_r_squared <- summary(mean_four_political_views_and_facility_length_fit_no_NA)$r.squared
 mean_four_political_views_and_facility_length_fit__no_NA_r_squared
-----
+```
 
 
 
