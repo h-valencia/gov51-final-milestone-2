@@ -58,6 +58,11 @@ prop.table(table(survey$party, survey$length_in_this_facility))
 # Weapons
 
 ```{r Weapons-Length Table}
+
+### MAYBE CHANGE BARPLOTS FROM TABLE TO PROP TABLE SO THAT THE OVER/UNDER 10 YEARS IS MORE COMPARABLE.
+  ### HOW DO WE DO THIS? SEPARATE OVER/UNDER?
+
+
 # Table with weapons stance and length in facility
 weptab <- table(survey_subset$stance_on_assault_weapons_ban, survey_subset$length_in_this_facility)
 knitr::kable(weptab, digits = 4, caption = "Stance on Assault Weapons Ban Based on Jail Time")
@@ -251,10 +256,9 @@ barplot(ideology_length_table, beside = TRUE, legend = rownames(ideology_length_
 ```{r}
 ## linear regression model comparing the mean of four political views and the length of time spent in prison with NA
 mean_four_political_views_and_facility_length_fit <- lm(survey$mean_four_political_views ~ survey$length_in_this_facility)
-mean_four_political_views_and_facility_length_fit
-mean_four_political_views_and_facility_length_fit_plot <- plot(mean_four_political_views_and_facility_length_fit) 
-mean_four_political_views_and_facility_length_fit_r_squared <- summary(mean_four_political_views_and_facility_length_fit)$r.squared
-mean_four_political_views_and_facility_length_fit_r_squared
+
+summary(mean_four_political_views_and_facility_length_fit)
+plot(mean_four_political_views_and_facility_length_fit) 
 ```
 
 
