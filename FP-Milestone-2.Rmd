@@ -25,16 +25,20 @@ survey$party <- gsub("The Republican party", "Conservative", survey$party)
 survey$party <- gsub("The Democratic party", "Liberal", survey$party)
 
 # Turning the responses of the "stance on" questions into factor variables
-stance_cols <- c("stance_on_assault_weapons_ban", "stance_on_marijuana_legalization", "stance_on_raise_min_wage", "stance_on_tightening_border_security")
-survey[stance_cols] <- lapply(survey[stance_cols], factor)
+# stance_cols <- c("stance_on_assault_weapons_ban", "stance_on_marijuana_legalization", "stance_on_raise_min_wage", "stance_on_tightening_border_security")
+# survey[stance_cols] <- lapply(survey[stance_cols], factor)
 
-levels(survey[stance_cols]) <- c("Undecided", "Strongly Oppose", "Oppose", "Support", "Strongly Support")
+# levels(survey[stance_cols]) <- c("Undecided", "Strongly Oppose", "Oppose", "Support", "Strongly Support")
+
+survey$race <- ifelse(survey$identifies_as_hispanic_or_latinx == TRUE, "Hispanic", 
+                      ifelse(survey$identifies_as_black == TRUE, "Black", "White"))
 ```
 
 ```{r Summarize Stance}
 #Summarizing the explanatory and response variables using tidyverse.
 survey_subset <- survey %>%
   select(party, 
+         race,
          length_in_this_facility,
          stance_on_assault_weapons_ban, 
          stance_on_marijuana_legalization, 
@@ -254,6 +258,9 @@ barplot(ideology_length_table, beside = TRUE, legend = rownames(ideology_length_
 ## Regression
 
 ```{r}
+
+### WIPE THIS SECTION, REGRESSION MEANINGLESS, PLOTS STUPID.
+
 ## linear regression model comparing the mean of four political views and the length of time spent in prison with NA
 mean_four_political_views_and_facility_length_fit <- lm(survey$mean_four_political_views ~ survey$length_in_this_facility)
 
@@ -261,6 +268,19 @@ summary(mean_four_political_views_and_facility_length_fit)
 plot(mean_four_political_views_and_facility_length_fit) 
 ```
 
+```{r}
+survey$education <- ifelse(survey$highest_education_level == "High school or GED or less", "High School or less", "Higher Education")
+
+survey$weapons[survey$stance_on_assault_weapons_ban == "Strongly Oppose"] <- 0
+survey$weapons[survey$stance_on_assault_weapons_ban == "Oppose"] <- 0
+survey$weapons[survey$stance_on_assault_weapons_ban == "Undecided"] <- NA
+survey$weapons[survey$stance_on_assault_weapons_ban == "Support"] <- 1
+survey$weapons[survey$stance_on_assault_weapons_ban == "Strongly support"] <- 1
+
+fit1 <- lm(data = survey, weapons ~ length_in_this_facility + race + age + education + party + race*length_in_this_facility)
+
+summary(fit1)
+```
 
 
 
